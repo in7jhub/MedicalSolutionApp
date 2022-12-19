@@ -3552,6 +3552,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d97e45899572c95488a0e1987235ae18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  curForceRawCpy: 0
+  normalizedCurForceCpy: 0
 --- !u!224 &1470482722
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3968,6 +3970,7 @@ MonoBehaviour:
   middleBall: {fileID: 207901138}
   innerBall: {fileID: 939158737}
   gaugeText: {fileID: 237816319}
+  gameBallScript: {fileID: 2081079324}
   neededTry: 10
   curTry: 0
   mappedY: 0
@@ -5196,6 +5199,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2081079323}
+  - component: {fileID: 2081079324}
   m_Layer: 5
   m_Name: GameBall
   m_TagString: Untagged
@@ -5225,6 +5229,21 @@ RectTransform:
   m_AnchoredPosition: {x: 720, y: -670.3}
   m_SizeDelta: {x: 350, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2081079324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081079322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 854c6bb23be1c974abb92f7481ee0d15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outer: {fileID: 569991283}
+  middle: {fileID: 207901138}
+  inner: {fileID: 939158737}
 --- !u!1 &2098575902
 GameObject:
   m_ObjectHideFlags: 0

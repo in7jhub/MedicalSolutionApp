@@ -9,6 +9,9 @@ public class DataManager : MonoBehaviour
     public static float curForceRaw = 0;
     public static float normalizedCurForce = 0;
 
+    public float curForceRawCpy = 0;
+    public float normalizedCurForceCpy = 0;
+
     void Start()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -16,8 +19,11 @@ public class DataManager : MonoBehaviour
 
     void Update()
     {
+        curForceRawCpy = curForceRaw;
+        normalizedCurForceCpy = normalizedCurForce;
         normalizeCurForce();
     }
+    
 
     float normalizeCurForce()
     {

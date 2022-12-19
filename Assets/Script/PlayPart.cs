@@ -10,6 +10,7 @@ public class PlayPart : MonoBehaviour
     public Image gaugeCircleFG, gaugeCircleBG;
     public Transform outerBall, middleBall, innerBall;
     public Text gaugeText;
+    public GameBall gameBallScript;
 
     public int neededTry = 10;
     public int curTry = 0;
@@ -38,7 +39,7 @@ public class PlayPart : MonoBehaviour
 
         if(isGameReady)
         {
-            makeTestVal(); // 테스트가 끝나면 주석 해제
+            simulateCurForceRaw(); // 테스트가 끝나면 주석 해제
             moveByCurForce();
         }
     }
@@ -46,8 +47,13 @@ public class PlayPart : MonoBehaviour
     void moveByCurForce()
     {
         float zeroToOne;
+        //게임모드가 아이소토닉이면
         float movableLength = (-1 * maxBallYasLayout) + minBallYasLayout ;
-        
+        // //게임모드가 아이소키네틱이면
+        // movableLength = (-1 * maxBallYasLayout) + minBallYasLayout + 50;
+        // //게임모드가 아이소메트릭이면
+        // movableLength = (-1 * maxBallYasLayout) + minBallYasLayout + 100;
+
         if(DataManager.normalizedCurForce > 1)
         {
             zeroToOne = 1;
@@ -61,30 +67,56 @@ public class PlayPart : MonoBehaviour
             zeroToOne = DataManager.normalizedCurForce;
         }
 
-        Vector2 target = new Vector2(
-            gameBall.anchoredPosition.x,
-            minBallYasLayout - (movableLength * zeroToOne)
-        );
+        Vector2 target;
+        
+        if ((zeroToOne / 0.7f) <= 1)
+        {
+            gameBall.localScale = Vector3.one;
+            target = new Vector2(
+                gameBall.anchoredPosition.x,
+                minBallYasLayout - (movableLength * (zeroToOne / 0.7f))
+            );
+        }
+        else
+        {
+            target = new Vector2(
+                gameBall.anchoredPosition.x,
+                minBallYasLayout - movableLength
+            );
 
-        Debug.Log(minBallYasLayout - (movableLength * zeroToOne));
+            // 게임모드가 아이소토닉이면
+            outerBall.localScale = new Vector3(
+                zeroToOne / 0.7f, 1, 1
+            );
+
+            // // 게임모드가 아이소키네틱이면
+            // middleBall.localScale = new Vector3(
+            //     zeroToOne / 0.8f, 1, 1
+            // );
+
+            // // 게임모드가 아이소메트릭이면
+            // innerBall.localScale = new Vector3(
+            //     zeroToOne / 0.8f, 1, 1
+            // );
+        }
 
         gameBall.anchoredPosition = target;
     }
 
-    void makeTestVal()
+    void simulateCurForceRaw()
     {
         if (Input.GetKey(KeyCode.Space))
         {
             if(UnityEngine.Random.Range(0f, 1f) < 0.1f)
             {
                 testForceValueNoise = UnityEngine.Random.Range(
-                    0f * DataManager.thresholdMax,
+                    0f,
                     0.1f * DataManager.thresholdMax
                 );
             }
 
             DataManager.curForceRaw = Mathf.Lerp( 
-                DataManager.curForceRaw, 
+                DataManager.curForceRaw,
                 DataManager.thresholdMax - testForceValueNoise,
                 0.01f
             );
@@ -94,7 +126,7 @@ public class PlayPart : MonoBehaviour
             if (UnityEngine.Random.Range(0f, 1f) < 0.1f)
             {
                 testForceValueNoise = UnityEngine.Random.Range(
-                    0f * DataManager.thresholdMax,
+                    0f,
                     0.1f * DataManager.thresholdMax
                 );
             }
