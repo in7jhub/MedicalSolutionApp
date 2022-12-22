@@ -11,23 +11,26 @@ public class PlayPart : MonoBehaviour
     public Transform outerBall, middleBall, innerBall;
     public Text gaugeText;
     public GameBall gameBallScript;
+    public GameObject gameBorderBoxBottom;
 
     public int neededTry = 10;
     public int curTry = 0;
     
     public float mappedY = 0;
-    public float startingBallY = -483;
-    public float minBallYasLayout = -303;
-    public float maxBallYasLayout = -670;
+    public float startingBallY;
+    public float minBallYLayout;
+    public float maxBallYLayout;
 
     public bool isGameJustStarted = true;
     public bool isGameReady = false;
+    public bool noiseOn;
 
     public float testForceValueNoise = 0;
 
     void Start()
     {
         gaugeCircleFG.fillAmount = neededTry - curTry;
+        maxBallYLayout = (gameBallScript.canvasRt.sizeDelta.y - minBallYLayout) * -1;
     }
 
     void Update()
@@ -48,11 +51,11 @@ public class PlayPart : MonoBehaviour
     {
         float zeroToOne;
         //게임모드가 아이소토닉이면
-        float movableLength = (-1 * maxBallYasLayout) + minBallYasLayout ;
+        float movableLength = (-1 * maxBallYLayout) + minBallYLayout ;
         // //게임모드가 아이소키네틱이면
-        // movableLength = (-1 * maxBallYasLayout) + minBallYasLayout + 50;
+        // movableLength = (-1 * maxBallYLayout) + minBallYLayout + 50;
         // //게임모드가 아이소메트릭이면
-        // movableLength = (-1 * maxBallYasLayout) + minBallYasLayout + 100;
+        // movableLength = (-1 * maxBallYLayout) + minBallYLayout + 100;
 
         if(DataManager.normalizedCurForce > 1)
         {
@@ -74,14 +77,14 @@ public class PlayPart : MonoBehaviour
             gameBall.localScale = Vector3.one;
             target = new Vector2(
                 gameBall.anchoredPosition.x,
-                minBallYasLayout - (movableLength * (zeroToOne / 0.7f))
+                minBallYLayout - (movableLength * (zeroToOne / 0.7f))
             );
         }
         else
         {
             target = new Vector2(
                 gameBall.anchoredPosition.x,
-                minBallYasLayout - movableLength
+                minBallYLayout - movableLength
             );
 
             // 게임모드가 아이소토닉이면
@@ -107,7 +110,7 @@ public class PlayPart : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            if(UnityEngine.Random.Range(0f, 1f) < 0.1f)
+            if(UnityEngine.Random.Range(0f, 1f) < 0.1f && noiseOn)
             {
                 testForceValueNoise = UnityEngine.Random.Range(
                     0f,
@@ -123,7 +126,7 @@ public class PlayPart : MonoBehaviour
         }
         else
         {
-            if (UnityEngine.Random.Range(0f, 1f) < 0.1f)
+            if (UnityEngine.Random.Range(0f, 1f) < 0.1f && noiseOn)
             {
                 testForceValueNoise = UnityEngine.Random.Range(
                     0f,
@@ -143,7 +146,7 @@ public class PlayPart : MonoBehaviour
     {
         gameBall.anchoredPosition = new Vector2(gameBall.anchoredPosition.x, -485);
         isGameJustStarted = false;
-        Vector2 _startingPos = new Vector2(gameBall.anchoredPosition.x, minBallYasLayout);
+        Vector2 _startingPos = new Vector2(gameBall.anchoredPosition.x, minBallYLayout);
         
         while (((Vector2)gameBall.anchoredPosition - _startingPos).magnitude > 0.1)
         {

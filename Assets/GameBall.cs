@@ -2,21 +2,60 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class GameBall : MonoBehaviour
 {
-    public Transform outer;
-    public Transform middle;
-    public Transform inner;
+    public RectTransform outer;
+    public RectTransform middle;
+    public RectTransform inner;
+    public RectTransform rt;
+    public RectTransform canvasRt;
+    public float parentRtX;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        
+        float ratio = canvasRt.sizeDelta.x / canvasRt.sizeDelta.y; 
+        if(ratio < 1)
+        {
+            if(canvasRt.sizeDelta.y * 0.3f < canvasRt.sizeDelta.x * 0.3f)
+            {
+                outer.sizeDelta = new Vector2(
+                    canvasRt.sizeDelta.y * 0.3f,
+                    canvasRt.sizeDelta.y * 0.3f
+                );
+            }
+            else
+            {
+                outer.sizeDelta = new Vector2(
+                    canvasRt.sizeDelta.x * 0.3f,
+                    canvasRt.sizeDelta.x * 0.3f
+                );
+            }
+        }
+        else
+        {
+            if (canvasRt.sizeDelta.x * 0.3f < canvasRt.sizeDelta.y * 0.3f)
+            {
+                outer.sizeDelta = new Vector2(
+                    canvasRt.sizeDelta.x * 0.3f,
+                    canvasRt.sizeDelta.x * 0.3f
+                );
+            }
+            else
+            {
+                outer.sizeDelta = new Vector2(
+                    canvasRt.sizeDelta.y * 0.3f,
+                    canvasRt.sizeDelta.y * 0.3f
+                );
+            }
+        }
+
+        middle.sizeDelta = outer.sizeDelta * 0.7f;
+        inner.sizeDelta = outer.sizeDelta * 0.4f;
+
+        Debug.Log(ratio);
+        Debug.Log(rt.sizeDelta);
+
+        parentRtX = canvasRt.sizeDelta.x;
     }
 }
