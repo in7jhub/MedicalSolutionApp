@@ -53,8 +53,24 @@ public class GameBall : MonoBehaviour
         middle.sizeDelta = outer.sizeDelta * 0.7f;
         inner.sizeDelta = outer.sizeDelta * 0.4f;
 
-        Debug.Log(ratio);
-        Debug.Log(rt.sizeDelta);
+        switch(GamePhaseManager.curGameMode)
+        {
+            case GamePhaseManager.GameMode.isotonic :
+                outer.gameObject.SetActive(true);
+                middle.gameObject.SetActive(true);
+                inner.gameObject.SetActive(true);
+                break;
+            case GamePhaseManager.GameMode.isokinetic :
+                outer.gameObject.SetActive(false);
+                middle.gameObject.SetActive(true);
+                inner.gameObject.SetActive(true);
+                break;
+            case GamePhaseManager.GameMode.isometric :
+                outer.gameObject.SetActive(false);
+                middle.gameObject.SetActive(false);
+                inner.gameObject.SetActive(true);
+                break;
+        }
 
         parentRtX = canvasRt.sizeDelta.x;
     }

@@ -8,10 +8,10 @@ public class PlayPart : MonoBehaviour
 {
     public RectTransform gameBall;
     public Image gaugeCircleFG, gaugeCircleBG;
-    public Transform outerBall, middleBall, innerBall;
+    public RectTransform outerBall, middleBall, innerBall;
     public Text gaugeText;
     public GameBall gameBallScript;
-    public GameObject gameBorderBoxBottom;
+    public RectTransform gameBorderBoxBottom;
 
     public int neededTry = 10;
     public int curTry = 0;
@@ -27,14 +27,12 @@ public class PlayPart : MonoBehaviour
 
     public float testForceValueNoise = 0;
 
-    void Start()
-    {
-        gaugeCircleFG.fillAmount = neededTry - curTry;
-        maxBallYLayout = (gameBallScript.canvasRt.sizeDelta.y - minBallYLayout) * -1;
-    }
 
     void Update()
     {
+        if(curTry <= 0) gaugeCircleFG.fillAmount = 1;
+        else gaugeCircleFG.fillAmount =  1f - ((float)curTry / (float)neededTry);
+
         if(isGameJustStarted) 
         {
             StartCoroutine(ballToMinPos());
@@ -42,37 +40,43 @@ public class PlayPart : MonoBehaviour
 
         if(isGameReady)
         {
-            simulateCurForceRaw(); // 테스트가 끝나면 주석 해제
+            simulateCurForceRaw(); // 테스트가 끝나면 주석 처리
             moveByCurForce();
         }
     }
 
     void moveByCurForce()
     {
+        switch(GamePhaseManager.curGameMode)
+        {
+            case GamePhaseManager.GameMode.isotonic :
+                maxBallYLayout = (gameBallScript.canvasRt.sizeDelta.y - 45/*bottomMagin*/ - gameBorderBoxBottom.sizeDelta.y - outerBall.sizeDelta.y / 2) * -1;
+                minBallYLayout = -125 - outerBall.sizeDelta.y / 2;
+                break;
+            case GamePhaseManager.GameMode.isokinetic:
+                maxBallYLayout = (gameBallScript.canvasRt.sizeDelta.y - 45/*bottomMagin*/ - gameBorderBoxBottom.sizeDelta.y - middleBall.sizeDelta.y / 2) * -1;
+                minBallYLayout = -125 - middleBall.sizeDelta.y / 2;
+                break;
+            case GamePhaseManager.GameMode.isometric:
+                maxBallYLayout = (gameBallScript.canvasRt.sizeDelta.y - 45/*bottomMagin*/ - gameBorderBoxBottom.sizeDelta.y - innerBall.sizeDelta.y / 2) * -1;
+                minBallYLayout = -125 - innerBall.sizeDelta.y / 2;
+                break;
+            default :
+                maxBallYLayout = (gameBallScript.canvasRt.sizeDelta.y - 45/*bottomMagin*/ - gameBorderBoxBottom.sizeDelta.y - outerBall.sizeDelta.y / 2) * -1;
+                minBallYLayout = -125 - outerBall.sizeDelta.y / 2;
+                break;
+        }
+
+        Vector2 target; // 공이 이동하기 위한 타겟
         float zeroToOne;
-        //게임모드가 아이소토닉이면
-        float movableLength = (-1 * maxBallYLayout) + minBallYLayout ;
-        // //게임모드가 아이소키네틱이면
-        // movableLength = (-1 * maxBallYLayout) + minBallYLayout + 50;
-        // //게임모드가 아이소메트릭이면
-        // movableLength = (-1 * maxBallYLayout) + minBallYLayout + 100;
+        float movableLength = (-1 * maxBallYLayout) + minBallYLayout;
 
-        if(DataManager.normalizedCurForce > 1)
-        {
-            zeroToOne = 1;
-        }
-        else if(DataManager.normalizedCurForce < 0)
-        {
-            zeroToOne = 0;
-        }
-        else
-        {
-            zeroToOne = DataManager.normalizedCurForce;
-        }
+        if(DataManager.normalizedCurForce > 1) zeroToOne = 1;
+        else if(DataManager.normalizedCurForce < 0) zeroToOne = 0;
+        else zeroToOne = DataManager.normalizedCurForce;
 
-        Vector2 target;
         
-        if ((zeroToOne / 0.7f) <= 1)
+        if ((zeroToOne / 0.7f) <= 1) // 70퍼센트까지 누르면 바닥에 공이 닿음
         {
             gameBall.localScale = Vector3.one;
             target = new Vector2(
@@ -80,27 +84,31 @@ public class PlayPart : MonoBehaviour
                 minBallYLayout - (movableLength * (zeroToOne / 0.7f))
             );
         }
-        else
+        else // 바닥에 공이 닿으면
         {
             target = new Vector2(
                 gameBall.anchoredPosition.x,
                 minBallYLayout - movableLength
             );
 
-            // 게임모드가 아이소토닉이면
-            outerBall.localScale = new Vector3(
-                zeroToOne / 0.7f, 1, 1
-            );
-
-            // // 게임모드가 아이소키네틱이면
-            // middleBall.localScale = new Vector3(
-            //     zeroToOne / 0.8f, 1, 1
-            // );
-
-            // // 게임모드가 아이소메트릭이면
-            // innerBall.localScale = new Vector3(
-            //     zeroToOne / 0.8f, 1, 1
-            // );
+            switch(GamePhaseManager.curGameMode)
+            {
+                case GamePhaseManager.GameMode.isotonic :
+                    outerBall.localScale = new Vector3(
+                        zeroToOne / 0.7f, 1, 1
+                    );
+                    break;
+                case GamePhaseManager.GameMode.isokinetic :
+                    middleBall.localScale = new Vector3(
+                        zeroToOne / 0.7f, 1, 1
+                    );
+                    break;
+                case GamePhaseManager.GameMode.isometric :
+                    innerBall.localScale = new Vector3(
+                        zeroToOne / 0.7f, 1, 1
+                    );
+                    break;
+            }
         }
 
         gameBall.anchoredPosition = target;
